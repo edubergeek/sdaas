@@ -1,0 +1,19 @@
+{
+  "host": "moana.ifa.hawaii.edu",
+  "port": 7411,
+  "catalog":
+  [
+    {
+      "name": "ATLAS-VAR",
+      "description": "A First Catalog of Variable Stars Measured by ATLAS",
+      "citation": "A. N. Heinze et al 2018 AJ 156 241",
+      "publication": "https://iopscience.iop.org/article/10.3847/1538-3881/aae47f",
+      "doi": "10.17909/T9H98D",
+      "path": "/atlas/dr1",
+      "extension": "csv",
+      "metadata": "stats.txt",
+      "gigabytes": 29,
+      "files": 285
+    }
+  ]
+}
