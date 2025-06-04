@@ -1,19 +1,102 @@
 {
-  "host": "moana.ifa.hawaii.edu",
-  "port": 7411,
-  "catalog":
-  [
+  "dataset": [
     {
-      "name": "ATLAS-VAR",
-      "description": "A First Catalog of Variable Stars Measured by ATLAS",
-      "citation": "A. N. Heinze et al 2018 AJ 156 241",
-      "publication": "https://iopscience.iop.org/article/10.3847/1538-3881/aae47f",
-      "doi": "10.17909/T9H98D",
-      "path": "/atlas/dr1",
-      "extension": "csv",
-      "metadata": "stats.txt",
-      "gigabytes": 29,
-      "files": 285
+      "namespace": "UHIFA",
+      "id": "ATLAS_DR1",
+      "name": "ATLAS Variable Light Curves",
+      "osdf_origin": "IFA_ITC_ORIGIN",
+      "contact": {
+        "name": "Curt Dodds",
+        "email": "dodds@hawaii.edu"
+      },
+      "publication": {
+        "url": "https://iopscience.iop.org/article/10.3847/1538-3881/aae47f",
+        "title": "A First Catalog of Variable Stars Measured by ATLAS",
+        "citation": "A. N. Heinze et al 2018 AJ 156 241",
+        "doi": "10.17909/T9H98D"
+      },
+      "parameter": [ "dec_from", "dec_upto" ],
+      "bag": [
+        "/atlas/dr1",
+        "atlas_lc_dr1_{0}-{1}.csv"
+      ],
+      "multiple": 1,
+      "atomic": 1,
+      "type": "csv",      
+      "assembly": { "method": "row", "axis": 0, "order": "", "dim": [0,36] },
+      "csv": {
+        "header": 1,
+        "attribute": [
+"ATO_ID","starID","ra","dec","CLASS","gmag","rmag","imag","zmag","ymag","prob_CBF","prob_CBH","prob_DBF","prob_DBH","prob_HARD","prob_MIRA","prob_MPULSE","prob_MSINE","prob_NSINE","prob_PULSE","prob_SINE","prob_IRR","prob_LPV","prob_dubious","fp_period","ls_Pday","fp_LSperiod","fp_lngfitper","vf_c_med","vf_o_med","mjd","dra","ddec","filter","m","dm"
+        ],
+        "dtype": [ "string","string","float","float","string","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","string","float","float"
+        ],
+        "yhat": [ "CLASS" ]
+      },
+      "volume": 29,
+      "volume_unit": "GB",
+      "files": 285,
+      "file_size_min": 0.016384,
+      "file_size_max": 2188.304389,
+      "file_size_mean": 792.338216,
+      "file_size_unit": "MB"
+    },
+    {
+      "namespace": "UHIFA",
+      "id": "HINODE_SOT_SP",
+      "name": "Hinode SOT SP",
+      "osdf_origin": "IFA_ITC_ORIGIN",
+      "contact": {
+        "name": "Curt Dodds",
+        "email": "dodds@hawaii.edu"
+      },
+      "publication": {
+        "url": "",
+        "title": "",
+        "citation": "",
+        "doi": ""
+      },
+      "path": "/hinode",
+      "schema": "path/file",
+      "extension": "fits",
+      "volume": 12.321,
+      "volume_unit": "TB",
+      "files": 17172705,
+      "file_size_min": 0.016384,
+      "file_size_max": 4.115520,
+      "file_size_mean": 0.449921,
+      "file_size_unit": "MB",
+      "metadata": [],
+      "pattern_arg": [
+        "year",
+        "month",
+        "day",
+        "hour",
+        "minute",
+        "second"
+      ],
+      "x": {
+        "path_pattern": "level1/{0}/{1}/{2}/SP3D/{0}{1}{2}_{3}{4}{5}",
+        "file_pattern": "*.fits",
+        "thumb_pattern": "*_stksimg.save",
+        "file_dim": [112,384,4],
+        "object_dim": [384,0,112,4],
+        "composition": { "method": "scan", "axis": 1, "order": "time" },
+        "header": 0,
+        "attribute": [],
+        "dtype": []
+      },
+      "y": {
+        "path_pattern": "level2/{0}/{1}/{2}/SP3D/{0}{1}{2}_{3}{4}{5}",
+        "file_pattern": "*.fits",
+        "thumb_pattern": "thumbnails/*.png",
+        "file_dim": [384,0,4],
+        "object_dim": [384,0,112,4],
+        "composition": { "method": "x", "axis": 1, "order": "" },
+        "header": 0,
+        "attribute": [],
+        "dtype": []
+      }
     }
   ]
 }
