@@ -15,6 +15,11 @@ For portability **SDaaS** is implemented as a service running in a docker contai
 
 Docker Compose may be used to run the docker container. An equivalent docker run command can also be used.
 
+### Build the containers
+```
+(cd service; docker compose build)
+(cd client; docker compose build)
+```
 ### Run the service
 ```
 cd service
@@ -39,25 +44,33 @@ docker compose down
 
 
 ## Quick Start
-We run a demo service at the [Institute for Astronomy, University of Hawaii, Manoa](https://www.ifa.hawaii.edu/) on host: data.ifa.hawaii.edu and port 7411. This service allows you to list available datasets. You can select a dataset and filter it, transform it and stream stream it to a client using **SDaaS**. To do this, run the Jupyter notebook [sdaas_demo.ipynb](./sdaas_demo.ipynb/).
+We run the SDaaS service at the [Institute for Astronomy, University of Hawaii, Manoa](https://www.ifa.hawaii.edu/) on host: data.ifa.hawaii.edu and port 8411. This service allows you to list available datasets. You can then select a dataset by **id** to work with. There are 3 primary operations you can perform on the selected dataset. You can 1) filter, 2) transform and 3) stream the dataset to a client using a **SDaaSClient** object (defined in [SDaaSClient.py](./client/app/SDaaSClient.py/). To experiment with SDaaS, run the Jupyter notebook [SDaaSDemo.ipynb](./client/app/SDaaSDemo.ipynb/).
 
 
-# Taxonomy
+# SDaaS Taxonomy
 1. Data model
-    1. Bag of objects
-    1. Examples are atomic objects
-    1. A batch is a fixed size set of examples
+    1. Object
+    1. Bag
+    1. Example
+    1. Batch
+1. Object
+    1. An object may be a bag or an example
 1. Bag
     1. An ML training set is a bag of objects
     1. A dataset is a bag of objects
     1. A bag contains one or more objects (no empty bags)
-1. Object
-    1. An object may be a bag or an example
 1. Example
     1. An example may be composable in which case it is a bag of objects with assembly instructions
     1. An example may be simple in which case it is a bag of one or more objects that require no assembly
     1. An example must be serializable (e.g. to a byte stream)
-    1. All data comprising an example is associated in two subsets (X, Y) where Y can be an empty set but X is never empty.
+    1. All data comprising an example belongs to one of two subsets (X, Y) where Y can be an empty set but X is never empty.
+        1. X
+            1. Dependent variables, aka in machine learning, features.
+        1. Y
+            1. Independent variables aka in machine learning, ground truth or training targets.
+            1. Self-supervised and unsupervised algorithms typically have a null Y set, using X as the target of training.
+1. Batch
+    1. A batch is an ephemeral bag comprising a fixed number of examples
 
 
 # Generator Pipeline
@@ -86,7 +99,7 @@ We run a demo service at the [Institute for Astronomy, University of Hawaii, Man
     1. CSV file
         1. Ignore first row
         1. Each row after 1 is an example
-        1. One column (class) composes the Y subset
+        1. One column _CLASS_ composes the Y subset
 1. Parallelism
     1. Multiple CSV files can be processed in parallel
     1. Batch size samples can be streamed as they are processed from multiple files
@@ -111,12 +124,18 @@ We run a demo service at the [Institute for Astronomy, University of Hawaii, Man
             1. e.g. /hinode/**level2**/2017/08/20/SP3D/20170820_180544/*.fits
             1. e.g. /hinode/**level2.1**/2017/08/20/SP3D/20170820_180544/*.fits
     
-## Assemble An Example
-1. Build a pipeline that emits pairs of training examples (x, y) where a file walk on XGlob is transformed
-    1. first to an object representation of the X file(s)
-    1. then paired with the matching object representation of the Y file(s) or features 
-1. Y may not be from a file e.g. for categorical classification. Y may be a subset of X file features (class ordinal or code)
-1. Continue pipeline with one or more filters then patch extraction then augmentation transforms
+## Build a Pipeline
+1. Build a pipeline that emits fixed size batches of pairs of training examples (x, y).
+    1. A file/object walk on XGlob is performed
+    1. Because X is required, it anchors the tree walk.
+        1. Example features are extracted from each X object
+    1. If Y is defined Example targets are extracted from each Y object
+        1. Y might be defined as a subset of values in each X object. If so, target values are removed from X and added to Y. An example is the ATLAS_DR1 dataset where the csv column "CLASS" is the Y training target and all other values are X features.
+        1. Y might be defined as a separate object paired to each X object. If so, the defined transformation rules are used to identify Y objects corresponding to the current X object. The y values are extracted from the resulting Y object(s). The HINODE dataset is an example of this having pairs of directories for X feature FITS files and Y target FITS files.
+1. The next pipeline step is to slice or filter the examples with a chain of filters defined by the SDaaS client.
+1. The next pipeline step is to transform filtered examples as defined by the SDaaS client.
+1. The last pipeline step is to stream the resulting examples in fixed sized batches from the server to the client.
+    1. The SDaaSClient encapuslates multi-threaded batch streaming as a TensorFlow tf.data.Dataset, PyTorch torch.utils.data.Dataset or Pandas dataframe (using chunksize for incremental loading).
 
 ## Multithreading
 1. Parallelize bagging (globbed file tree walk)
@@ -128,7 +147,5 @@ We run a demo service at the [Institute for Astronomy, University of Hawaii, Man
     1. Origin Namespace
     1. Dataset UUID
     1. Generator UUID - uniquely identify the unique set of batches generated by this process
-
-```python
 
 ```

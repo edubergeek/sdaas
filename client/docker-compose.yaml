@@ -1,0 +1,36 @@
+services:
+  sdaas:
+    build: 
+      context: ./image
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    shm_size: 1gb
+    network_mode: host
+    expose:
+      - "8888"
+    ports:
+      - "8888:8888"
+    entrypoint: ["jupyter", "notebook"]
+#    command:
+#      - "/usr/bin/tail -f /dev/null"
+    volumes:
+      - ./app:/app
+        #- /data/spin4d:/spin4d
+        #- /hinode:/hinode
+        #- /atlas:/atlas
+        #- /data/me2022:/me2022
+        #- /data/me2023:/me2023
+        #- /stage:/stage
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      DISPLAY: ${DISPLAY}
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}
+      JUPYTER_PORT: ${JUPYTER_PORT}
+      QT_X11_NO_MITSHM: 1

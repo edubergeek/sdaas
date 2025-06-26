@@ -1,0 +1,58 @@
+services:
+  sdaas:
+    build: 
+      context: ./image
+    image: api-uvicorn
+    network_mode: host
+    hostname: sdaas
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    shm_size: 1gb
+    expose:
+      - "8411"
+    ports:
+      - "8411:8411"
+    entrypoint: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8411"]
+      #entrypoint: ["fastapi", "dev", "main.py"]
+      #- "uvicorn main.app --host 0.0.0.0 --port 8000"
+      #- "/usr/bin/tail -f /dev/null"
+    #networks:
+    #  frontend:
+    #  backend:
+    #    # you may set custom IP addresses
+    #    ipv4_address: 172.30.0.4
+    #      ports:
+    #        - "8800:8888"
+    #        - "6006:6006"
+    volumes:
+      - ./app:/app
+      - /scratch:/scratch
+        #- /data/spin4d:/spin4d
+        #- /hinode:/hinode
+        #- /atlas:/atlas
+        #- /data/me2022:/me2022
+        #- /data/me2023:/me2023
+        #- /stage:/stage
+        #- /home/${USER}/ml/:/ml/ 
+        #  - /tmp/.X11-unix:/tmp/.X11-unix
+    #restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      DISPLAY: ${DISPLAY}
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}
+      JUPYTER_PORT: ${JUPYTER_PORT}
+      QT_X11_NO_MITSHM: 1
+        #networks:
+        #  frontend:
+        #  backend:
+        #    ipam:
+        #      driver: default
+        #      config:
+        #        - subnet: 172.30.0.0/24

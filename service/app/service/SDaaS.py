@@ -214,6 +214,7 @@ if __name__ == "__main__":
 #  print(x_files)
 
 
+  print(dec_from, dec_upto)
   args = [dec_from, dec_upto]
   
   for matchdir in sdaas.BagGenerator(args):
