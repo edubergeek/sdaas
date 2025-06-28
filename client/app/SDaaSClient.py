@@ -14,9 +14,15 @@ class SDaaSClient:
       response.raise_for_status()  # Raise an exception for bad status codes
       return response.json()
 
-  async def GetDataset(self, item_id: int):
+  async def GetDataset(self, ds_id: str):
     async with httpx.AsyncClient() as client:
-      response = await client.get(f"{self.base_url}/dataset/{item_id}/")
+      response = await client.get(f"{self.base_url}/dataset/{ds_id}/")
+      response.raise_for_status()  # Raise an exception for bad status codes
+      return response.json()
+
+  async def GetFilter(self, ds_id: str):
+    async with httpx.AsyncClient() as client:
+      response = await client.get(f"{self.base_url}/filter/{ds_id}/")
       response.raise_for_status()  # Raise an exception for bad status codes
       return response.json()
 
