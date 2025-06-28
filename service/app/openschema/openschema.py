@@ -82,6 +82,28 @@ class OpenSchema():
     dsStatus = 0
     return { "response": dsInfo, "status": dsStatus }
         
+  def GetFilter(self, dsid):
+    dsStatus = -1
+    try:
+      self.SelectDataSet(dsid)
+    except RuntimeError:
+      return {"response": "Invalid dataset id: " + dsid, "status": dsStatus}
+    ds = self.catalog['dataset'][self.selectedDataSet]
+    dsFilter = {}
+    try:
+      dsFilter["name"] = ""
+      dsFilter["param"] = ds["parameter"]
+      if ds["type"] == "csv":
+        dsFilter["param"] += ds["csv"]["attribute"]
+    except RuntimeError:
+      return {"response": "Cannot load filter for id: " + dsid, "status": dsStatus}
+    dsStatus = 0
+    return { "response": dsFilter, "status": dsStatus }
+        
+  def SetFilter(self, dsid, schema):
+    dsStatus = -1
+    return {"response": "Cannot set filter for id: " + dsid, "status": dsStatus}
+        
   def Bags(self):
     return len(self.catalog['dataset'][self.selectedDataSet]['bag'])
 

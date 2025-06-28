@@ -17,3 +17,11 @@ async def root():
 @app.get("/dataset/{dsid}/")
 async def read_item(dsid: str):
     return schema.GetDataset(dsid)
+
+@app.get("/filter/{dsid}/")
+async def read_item(dsid: str):
+    return schema.GetFilter(dsid)
+
+#@app.put("/filter/{dsid}/{schema}/")
+#async def update_item(dsid: str, schema: dict):
+#    return schema.SetFilter(dsid, schema)
