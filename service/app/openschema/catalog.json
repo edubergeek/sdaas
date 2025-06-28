@@ -58,7 +58,11 @@
       },
       "path": "/hinode",
       "schema": "path/file",
-      "extension": "fits",
+      "type": "fits",
+      "bag": [
+        "/hinode"
+      ],
+      "parameter": [ "year", "month", "day", "hour", "minute", "second" ],
       "volume": 12.321,
       "volume_unit": "TB",
       "files": 17172705,
