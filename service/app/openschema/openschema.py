@@ -22,6 +22,7 @@ class OpenSchema():
       print("Cannot load catalog: ", self.catalogFile)
       current_directory = os.getcwd()
       print("Current directory:", current_directory)
+    self.filter = []
     
   def Catalog(self):
     f = open(self.catalogFile)
@@ -92,9 +93,13 @@ class OpenSchema():
     dsFilter = {}
     try:
       dsFilter["name"] = ""
-      dsFilter["param"] = ds["parameter"]
+      dsFilter["parameter"] = {}
+      dsFilter["attribute"] = {}
+      for idx in range(len(ds["parameter"])):
+        dsFilter["parameter"][ds["parameter"][idx]] = ""
       if ds["type"] == "csv":
-        dsFilter["param"] += ds["csv"]["attribute"]
+        for idx in range(len(ds["csv"]["attribute"])):
+          dsFilter["attribute"][ds["csv"]["attribute"][idx]] = ""
     except RuntimeError:
       return {"response": "Cannot load filter for id: " + dsid, "status": dsStatus}
     dsStatus = 0
@@ -102,7 +107,48 @@ class OpenSchema():
         
   def SetFilter(self, dsid, schema):
     dsStatus = -1
-    return {"response": "Cannot set filter for id: " + dsid, "status": dsStatus}
+    try:
+      self.SelectDataSet(dsid)
+    except RuntimeError:
+      return {"response": "Invalid dataset id: " + dsid, "status": dsStatus}
+    ds = self.catalog['dataset'][self.selectedDataSet]
+    try:
+      dsFilter = self.SetDatasetFilter(dsid, schema)
+    except RuntimeError:
+      return {"response": "Cannot set filter for id: " + dsid, "status": dsStatus}
+    dsStatus = 0
+    return { "response": dsFilter, "status": dsStatus }
+        
+  def SetDatasetFilter(self, dsid, schema):
+    self.selectedFilter = 0
+    for filt in self.filter:
+      if filt['dataset'] == dsid and filt['name'] == schema['name']:
+        break
+      self.selectedFilter += 1
+    if self.selectedFilter >= len(self.filter):
+      self.filter.append({})
+      self.filter[self.selectedFilter]['dataset'] = dsid
+      self.filter[self.selectedFilter]['name'] = schema['name']
+    self.filter[self.selectedFilter]["parameter"] = schema["parameter"]
+    self.filter[self.selectedFilter]["attribute"] = schema["attribute"]
+    dsStatus = 0
+    return { "response": self.filter[self.selectedFilter], "status": dsStatus }
+
+  def ListFilters(self):
+    dsList = []
+    dsStatus = -1
+
+    # Validate self.catalog
+    try:
+      my_filter = self.filter
+    except NameError:
+      return {"response": "Undefined variable: self.filter", "status": dsStatus}
+
+    for filt in self.filter:
+      dsf = { "id": filt["dataset"], "name": filt["name"] }
+      dsStatus = 0
+      dsList.append(dsf)
+    return { "response": dsList, "status": dsStatus }
         
   def Bags(self):
     return len(self.catalog['dataset'][self.selectedDataSet]['bag'])
